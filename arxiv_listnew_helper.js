@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ArXiv Helper
 // @namespace    https://arxiv.org/
-// @version      0.1.0
+// @version      0.1.1
 // @description  Enhances browsing the arXiv new submissions
 // @match        https://arxiv.org/list/*/new
 // ==/UserScript==
@@ -116,7 +116,11 @@
             }
         }
         // Press "c": click the copy button of the first visible dt
-        else if (e.key === "c") {
+        else if (e.key === "c"
+                 && !event.ctrlKey
+                 && !event.altKey
+                 && !event.metaKey
+                 && !event.shiftKey) {
             e.preventDefault();
             const idx = getFirstVisibleDT();
             if (idx !== null) {
