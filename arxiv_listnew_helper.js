@@ -71,6 +71,15 @@
         return null;
     }
 
+    function escapeHTML(str) {
+        return str
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
     // Keyboard navigation
     document.addEventListener("keydown", (e) => {
         // Move right →
@@ -148,7 +157,7 @@
         }
 
         // const md = `[[${arxivid}] ${title}](${absURL})`;
-        const html = `<a href="${absURL}">[${arxivid}] ${title}</a>`;
+        const html = `<a href="${absURL}">[${arxivid}] ${escapeHTML(title)}</a>`;
 
         const btn_text = "Copy link" // "Copy MD";
 
