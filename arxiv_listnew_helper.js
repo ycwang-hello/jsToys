@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ArXiv Helper
 // @namespace    https://arxiv.org/
-// @version      0.1.1
+// @version      0.1.2
 // @description  Enhances browsing the arXiv new submissions
 // @match        https://arxiv.org/list/*/new
 // ==/UserScript==
@@ -82,62 +82,62 @@
 
     // Keyboard navigation
     document.addEventListener("keydown", (e) => {
-        // Move right →
-        if (["ArrowRight"].includes(e.key)) {
-            e.preventDefault();
-            if (currentIndex === -1) {
-                // First move → goes to first paper
-                jumpToEntry(0);
-            } else if (currentIndex < dts.length - 1) {
-                jumpToEntry(currentIndex + 1);
+        if (!event.ctrlKey
+            && !event.altKey
+            && !event.metaKey
+            && !event.shiftKey) {
+            // Move right →
+            if (["ArrowRight"].includes(e.key)) {
+                e.preventDefault();
+                if (currentIndex === -1) {
+                    // First move → goes to first paper
+                    jumpToEntry(0);
+                } else if (currentIndex < dts.length - 1) {
+                    jumpToEntry(currentIndex + 1);
+                }
+            }
+
+            // Move left ←
+            else if (["ArrowLeft",].includes(e.key)) {
+                e.preventDefault();
+                if (currentIndex > 0) {
+                    jumpToEntry(currentIndex - 1);
+                }
+            }
+
+            // Press "g": jump to specific number
+            else if (e.key === "g") {
+                e.preventDefault();
+                const input = prompt(`Jump to item number (1 - ${dts.length}):`);
+                if (!input) return;
+
+                const n = parseInt(input, 10);
+                if (!isNaN(n) && n >= 1 && n <= dts.length) {
+                    jumpToEntry(n - 1); // user uses 1-based index
+                }
+            }
+
+            // Press "s": set current item to first visible dt, highlight
+            else if (e.key === "s") {
+                e.preventDefault();
+                const idx = getFirstVisibleDT();
+                if (idx !== null) {
+                    currentIndex = idx;
+                    highlightDT(idx);
+                    // Do NOT scroll; just update state
+                    console.log(`Current item set to ${idx + 1}`);
+                }
+            }
+            // Press "c": click the copy button of the first visible dt
+            else if (e.key === "c") {
+                e.preventDefault();
+                const idx = getFirstVisibleDT();
+                if (idx !== null) {
+                    const btn = dts[idx].querySelector("button");
+                    if (btn) btn.click(); // trigger the existing button behavior
+                }
             }
         }
-
-        // Move left ←
-        else if (["ArrowLeft",].includes(e.key)) {
-            e.preventDefault();
-            if (currentIndex > 0) {
-                jumpToEntry(currentIndex - 1);
-            }
-        }
-
-        // Press "g": jump to specific number
-        else if (e.key === "g") {
-            e.preventDefault();
-            const input = prompt(`Jump to item number (1 - ${dts.length}):`);
-            if (!input) return;
-
-            const n = parseInt(input, 10);
-            if (!isNaN(n) && n >= 1 && n <= dts.length) {
-                jumpToEntry(n - 1); // user uses 1-based index
-            }
-        }
-
-        // Press "s": set current item to first visible dt, highlight
-        else if (e.key === "s") {
-            e.preventDefault();
-            const idx = getFirstVisibleDT();
-            if (idx !== null) {
-                currentIndex = idx;
-                highlightDT(idx);
-                // Do NOT scroll; just update state
-                console.log(`Current item set to ${idx + 1}`);
-            }
-        }
-        // Press "c": click the copy button of the first visible dt
-        else if (e.key === "c"
-                 && !event.ctrlKey
-                 && !event.altKey
-                 && !event.metaKey
-                 && !event.shiftKey) {
-            e.preventDefault();
-            const idx = getFirstVisibleDT();
-            if (idx !== null) {
-                const btn = dts[idx].querySelector("button");
-                if (btn) btn.click(); // trigger the existing button behavior
-            }
-        }
-
     });
 
     // Add copy button next to each abstract link
