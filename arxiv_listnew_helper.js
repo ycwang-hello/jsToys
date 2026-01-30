@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ArXiv Helper
 // @namespace    https://arxiv.org/
-// @version      0.1.2
+// @version      0.1.3
 // @description  Enhances browsing the arXiv new submissions
 // @match        https://arxiv.org/list/*/new
 // ==/UserScript==
@@ -56,19 +56,19 @@
         highlightDT(idx);
     }
 
+    function isVisible(el) {
+        const rect = el.getBoundingClientRect();
+        return rect.bottom >= 0 && rect.top <= window.innerHeight;
+    }
+
     // Find the first dt visible on screen (top of viewport)
     function getFirstVisibleDT() {
-        const viewportTop = 0; // relative to viewport
-        const viewportBottom = window.innerHeight;
-
-        for (let i = 0; i < dts.length; i++) {
-            const rect = dts[i].getBoundingClientRect();
-            // If any part enters screen
-            if (rect.bottom >= viewportTop && rect.top <= viewportBottom) {
-                return i;
-            }
+    for (let i = 0; i < dts.length; i++) {
+        if (isVisible(dts[i])) {
+            return i;
         }
-        return null;
+    }
+    return null;
     }
 
     function escapeHTML(str) {
@@ -128,13 +128,31 @@
                     console.log(`Current item set to ${idx + 1}`);
                 }
             }
-            // Press "c": click the copy button of the first visible dt
+            // Press "c": click the copy button of the current dt or first visible dt
             else if (e.key === "c") {
                 e.preventDefault();
-                const idx = getFirstVisibleDT();
-                if (idx !== null) {
-                    const btn = dts[idx].querySelector("button");
-                    if (btn) btn.click(); // trigger the existing button behavior
+
+                let clicked = false;
+
+                // 1. Try current item first
+                if (currentIndex >= 0 && currentIndex < dts.length) {
+                    const dt = dts[currentIndex];
+                    if (isVisible(dt)) {
+                        const btn = dt.querySelector("button");
+                        if (btn) {
+                            btn.click();
+                            clicked = true;
+                        }
+                    }
+                }
+
+                // 2. If not clicked, fall back to first visible dt
+                if (!clicked) {
+                    const idx = getFirstVisibleDT();
+                    if (idx !== null) {
+                        const btn = dts[idx].querySelector("button");
+                        if (btn) btn.click();
+                    }
                 }
             }
         }
