@@ -19,7 +19,7 @@ Enhances browsing the arXiv new submissions [(example)](https://arxiv.org/list/a
 | `←` | Move to previous paper (relative to the current focus) |
 | `g` | Jump to a paper by index number (1-based) |
 | `s` | Focus the first visible paper in the viewport. Useful because if you scroll manually, pressing left/right without this will move relative to the old focus, not the paper you see on screen. |
-| `c` | Copy link of the first visible paper (same as clicking the button) |
+| `c` | Copy link of the currently focused paper (same as clicking the button). If the button is not visible in the viewport, copy the first visible one. |
 
 ### Button
 
